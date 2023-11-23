@@ -1,0 +1,39 @@
+{
+    "update.showReleaseNotes": false,
+    "workbench.colorTheme": "One Dark Pro Darker",
+    "workbench.iconTheme": "eq-material-theme-icons-darker",
+    "workbench.startupEditor": "none",
+    "breadcrumbs.enabled": true, // ファイルのパンくずリストを表示する
+    "window.zoomLevel": 0, // 画面全体の表示サイズはデフォルト
+    "editor.renderControlCharacters": true, // 制御文字を表示する
+    "editor.fontFamily": "'CaskaydiaCove NF', 'FiraCode Nerd Font', 'Meslo', 'Hasklig', 'Consolas', 'Courier New', 'monospace'",
+    "editor.fontSize": 14, // フォントサイズを変更
+    "editor.renderLineHighlight": "all", // 選択行の行番号をハイライトする
+    "editor.cursorBlinking": "smooth", // カーソルが滑らかに点滅するように
+    "editor.cursorSmoothCaretAnimation": "on", // カーソルの点滅をアニメーション表示する
+    "editor.cursorStyle": "block", // カーソルの外観をブロックに変更
+    "editor.formatOnSave": true, // ファイル保存時に自動でフォーマット
+    "editor.formatOnPaste": true, // ペースト時に自動でフォーマット
+    "editor.bracketPairColorization.enabled": true, // 括弧の対応を色付ける
+    "files.autoGuessEncoding": true, // ファイルの自動エンコードを実施
+    "files.trimTrailingWhitespace": true, // 保存時に行末の余分なスペースを削除する
+    "files.trimFinalNewlines": true, // ファイル保存時に最終行以降の空行削除
+    "emmet.showSuggestionsAsSnippets" : true, // Emmet の候補表示
+    "emmet.triggerExpansionOnTab": true, // TAB キーで Emmet を展開
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+    "telemetry.telemetryLevel": "off",
+    "launch": {
+        "configurations": [],
+        "compounds": []
+    },
+    "tabnine.experimentalAutoImports": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[csv]": {
+        // 行の折り返し方法を制御します。
+        "editor.wordWrap": "off"
+    },
+}
