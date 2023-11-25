@@ -64,11 +64,13 @@ else {
 
     ### Download dotfiles
     Write-Host "$workdir"
-    if (Test-Path "$workdir") {
-        Remove-Item -Path "$workdir" -Recurse -Force
-    }
+    # if (Test-Path "$workdir") {
+    #     Remove-Item -Path "$workdir" -Recurse -Force
+    # }
 
-    git clone --verbose 'https://github.com/k5-mot/dotfiles-win.git' "$workdir"
+    if (-not (Test-Path "$workdir")) {
+        git clone --verbose 'https://github.com/k5-mot/dotfiles-win.git' "$workdir"
+    }
     Set-Location "$workdir"
 
     ### Run Installer
