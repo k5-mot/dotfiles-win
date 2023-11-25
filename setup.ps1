@@ -15,6 +15,8 @@ $wingetpkgs = @(
     'OBSProject.OBSStudio'
     'NickeManarin.ScreenToGif'
     'TortoiseGit.TortoiseGit'
+    'vim.vim'
+    'Neovim.Neovim'
 )
 
 ### Fonts
