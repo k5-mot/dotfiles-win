@@ -35,7 +35,7 @@ if (-not $isAdmin) {
 
     ### Get Starter Script
     Invoke-WebRequest 'https://raw.githubusercontent.com/k5-mot/dotfiles-win/main/starter.ps1' -OutFile "$starterScript"
-    Copy-Item -Force '.\starter.ps1' "$starterScript"
+    # Copy-Item -Force '.\starter.ps1' "$starterScript"
 
     ### Run Starter Script on Admin
     if (Test-Path "$starterScript") {
