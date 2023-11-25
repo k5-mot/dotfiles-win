@@ -1,10 +1,29 @@
 
-### 管理者権限チェック
-$wid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-$prp = new-object System.Security.Principal.WindowsPrincipal($wid)
-$admin = [System.Security.Principal.WindowsBuiltInRole]::Administrator
-$isAdmin = $prp.IsInRole($admin)
-$workdir = $(Join-Path "$env:TEMP" 'dotfiles-win')
+function RunAsAdmin {
+    param (
+        [Parameter(Mandatory = $true)][string]$script,
+        [Parameter()][string]$scriptArgs
+    )
+    Start-Process pwsh -ArgumentList '-NoExit', $script, $scriptArgs -Verb 'RunAs' -Wait
+}
+
+function IsAdmin {
+    param ()
+    $wid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+    $prp = new-object System.Security.Principal.WindowsPrincipal($wid)
+    $admin = [System.Security.Principal.WindowsBuiltInRole]::Administrator
+    $isAdmin = $prp.IsInRole($admin)
+    return $isAdmin
+}
+
+$starterScript = $(Join-Path "$env:TEMP" 'starter.ps1')
+$reposDir = $(Join-Path "$env:USERPROFILE" 'repos')
+$workDir = $(Join-Path "$reposDir" 'dotfiles-win')
+$isAdmin = $(IsAdmin)
+
+if (-not (Test-Path "$reposDir")) {
+    New-Item "$reposDir" -ItemType Directory
+}
 
 if (-not $isAdmin) {
 
@@ -12,19 +31,20 @@ if (-not $isAdmin) {
     if ((Get-ExecutionPolicy) -ne 'RemoteSigned') {
         Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Confirm
     }
-    Write-Host 'ExecutionPolicy:' (Get-ExecutionPolicy)
+    Write-Host "ExecutionPolicy: $(Get-ExecutionPolicy)"
 
     ### Get Starter Script
-    Invoke-WebRequest 'https://raw.githubusercontent.com/k5-mot/dotfiles-win/main/starter.ps1' -OutFile "$env:TEMP\starter.ps1"
-    Copy-Item -Force '.\starter.ps1' $(Join-Path "$env:TEMP" 'starter.ps1')
+    Invoke-WebRequest 'https://raw.githubusercontent.com/k5-mot/dotfiles-win/main/starter.ps1' -OutFile "$starterScript"
+    Copy-Item -Force '.\starter.ps1' "$starterScript"
 
     ### Run Starter Script on Admin
-    if (Test-Path $(Join-Path "$env:TEMP" 'starter.ps1')) {
-        Start-Process powershell.exe -ArgumentList '-File', "$(Join-Path "$env:TEMP" 'starter.ps1')" -Verb "RunAs"
+    if (Test-Path "$starterScript") {
+        Start-Process 'powershell.exe' -ArgumentList '-File', "$starterScript" -Verb "RunAs"
         exit 0
     }
 }
 else {
+
     ### Required Apps for Installer
     $wingetpkgs = @(
         'Microsoft.PowerShell'
@@ -43,13 +63,13 @@ else {
     $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path', 'User')
 
     ### Download dotfiles
-    Write-Host $workdir
+    Write-Host "$workdir"
     if (Test-Path "$workdir") {
-        Remove-Item -Path $workdir -Recurse -Force
+        Remove-Item -Path "$workdir" -Recurse -Force
     }
 
-    git clone --verbose 'https://github.com/k5-mot/dotfiles-win.git' $workdir
-    Set-Location $workdir
+    git clone --verbose 'https://github.com/k5-mot/dotfiles-win.git' "$workdir"
+    Set-Location "$workdir"
 
     ### Run Installer
     if (Get-Command -Name 'pwsh' -ErrorAction SilentlyContinue) {
