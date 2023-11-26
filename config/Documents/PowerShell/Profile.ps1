@@ -91,7 +91,16 @@ $PSDefaultParameterValues['*:Encoding'] = 'utf8'
 $PSStyle.FileInfo.Directory = "`e[33;1m"
 
 ### Completion
-Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+
+# 重複した履歴を残さない
+Set-PSReadlineOption -HistoryNoDuplicates
+Set-PSReadLineOption -BellStyle Visual
+Set-PSReadLineOption -PredictionViewStyle ListView
+Set-PSReadLineKeyHandler -Key "Tab" -Function NextSuggestion
+Set-PSReadLineKeyHandler -Key "Shift+Tab" -Function PreviousSuggestion
+Set-PSReadLineKeyHandler -Key "Ctrl+r" -Function SwitchPredictionView
+# Set-PSReadLineKeyHandler -Key "Tab" -Function MenuComplete
+
 
 ### Alias
 Set-Alias unzip Expand-Archive
@@ -109,6 +118,9 @@ if (IsExistCommand -cmdname 'oh-my-posh') {
 ### PowerShell Modules
 $psmodules = @(
     'posh-git'
+    'Terminal-Icons'
+    'PSReadLine'
+    'CompletionPredictor'
 )
 foreach ($psmodule in $psmodules) {
     if (IsExistModule -modulename $psmodule) {

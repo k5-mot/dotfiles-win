@@ -1,6 +1,9 @@
 ### PowerShell Modules
 $psmodules = @(
     'posh-git'
+    'Terminal-Icons'
+    'PSReadLine'
+    'CompletionPredictor'
 )
 
 ### Winget Packages
