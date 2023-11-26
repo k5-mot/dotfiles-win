@@ -72,6 +72,11 @@ if ((Get-PSRepository -Name PSGallery).InstallationPolicy -ne 'Trusted') {
 }
 Write-Host 'InstallationPolicy:' ((Get-PSRepository -Name PSGallery).InstallationPolicy)
 
+### SSH Key Gen
+if (-not (Test-Path "$env:USERPROFILE\.ssh\id_rsa")) {
+    ssh-keygen -t rsa -b 4096 -C "SSH Key on Windows"
+}
+
 ### Install Apps via winget
 if (IsExistCommand -cmdname 'winget') {
     foreach ($wingetpkg in $wingetpkgs) {
