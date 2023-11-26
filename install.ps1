@@ -65,6 +65,3 @@ foreach ($srcpath in $(Get-ChildItem -Path $configdir -Recurse -File).FullName) 
     SymbolicLink -target $srcpath -path $dstpath
     Write-Host "Link $srcpath -> $dstpath" -ForegroundColor "DarkGreen"
 }
-Pause
-# https://qiita.com/BlueSilverCat/items/1a70492437411e932b34
-# https://stackoverflow.com/questions/817794/find-out-whether-a-file-is-a-symbolic-link-in-powershell

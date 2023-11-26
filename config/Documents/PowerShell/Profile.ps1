@@ -96,6 +96,8 @@ Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 ### Alias
 Set-Alias unzip Expand-Archive
 Set-Alias touch New-Item
+Set-Alias vi  'C:\Program Files\Vim\vim90\vim.exe'
+Set-Alias vim 'C:\Program Files\Vim\vim90\vim.exe'
 
 ### Oh-My-Posh
 if (IsExistCommand -cmdname 'oh-my-posh') {
