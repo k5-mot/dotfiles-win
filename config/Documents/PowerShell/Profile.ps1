@@ -53,6 +53,9 @@ Set-Alias Test-ExistPSModule       $(Join-Path $scriptsdir 'Test-ExistPSModule.p
 Set-Alias Test-ReparsePoint        $(Join-Path $scriptsdir 'Test-ReparsePoint.ps1')
 Set-Alias which                    $(Join-Path $scriptsdir 'which.ps1')
 
+### Local Configs
+$loaddir = "$env:USERPROFILE\Documents\PowerShell\Autoload"
+Get-ChildItem $loaddir | Where-Object Extension -eq ".ps1" | ForEach-Object { .$_.FullName }
 
 ### Oh-My-Posh
 if (Test-ExistCommand 'oh-my-posh') {
