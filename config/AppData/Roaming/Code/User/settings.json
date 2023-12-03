@@ -36,4 +36,5 @@
         // 行の折り返し方法を制御します。
         "editor.wordWrap": "off"
     },
+    "window.commandCenter": false,
 }

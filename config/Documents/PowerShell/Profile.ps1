@@ -1,72 +1,4 @@
 
-### Function
-function which {
-    param ($exefile)
-    return (Get-Command $exefile).Definition
-}
-
-function EditProfile {
-    if (IsExistCommand -cmdname 'code') {
-        code $PROFILE.CurrentUserAllHosts
-    }
-    else {
-        Get-Content $PROFILE.CurrentUserAllHosts
-    }
-    return ($PROFILE.CurrentUserAllHosts)
-}
-
-function IsExistCommand {
-    param ($cmdname)
-    return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
-}
-
-function IsExistModule {
-    param ($modulename)
-    return [bool](Get-InstalledModule -Name $modulename -ErrorAction SilentlyContinue)
-}
-
-function GetTimestamp {
-    param ()
-    return $(Get-Date -Format "yyyyMMddHHmmssff")
-}
-
-function IsAdmin {
-    param ()
-    $wid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-    $prp = new-object System.Security.Principal.WindowsPrincipal($wid)
-    $admin = [System.Security.Principal.WindowsBuiltInRole]::Administrator
-    $isAdmin = $prp.IsInRole($admin)
-    return $isAdmin
-}
-
-function SymbolicLink {
-    param(
-        [Parameter(Mandatory = $true)][string]$target,
-        [Parameter(Mandatory = $true)][string]$path,
-        [Parameter()][string]$name
-    )
-    $value = IsAdmin
-    if (!$value) {
-        Write-Host "Administrative privileges required."
-        return
-    }
-    if ($name -eq "") {
-        New-Item -ItemType 'SymbolicLink' -Path $path  -Value $target | Out-Null
-    }
-    else {
-        New-Item -ItemType 'SymbolicLink' -Path $path  -Name $name -Value $target | Out-Null
-    }
-}
-
-function Test-ReparsePoint {
-    param (
-        [Parameter(Mandatory = $true)][string]$path
-    )
-    $file = Get-Item $path -Force -ea SilentlyContinue
-    return [bool]($file.Attributes -band [IO.FileAttributes]::ReparsePoint)
-}
-
-
 ### Prompt
 function prompt() {
     $isAdmin = IsAdmin
@@ -91,7 +23,6 @@ $PSDefaultParameterValues['*:Encoding'] = 'utf8'
 $PSStyle.FileInfo.Directory = "`e[33;1m"
 
 ### Completion
-
 # 重複した履歴を残さない
 Set-PSReadlineOption -HistoryNoDuplicates
 Set-PSReadLineOption -BellStyle Visual
@@ -99,23 +30,38 @@ Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineKeyHandler -Key "Tab" -Function NextSuggestion
 Set-PSReadLineKeyHandler -Key "Shift+Tab" -Function PreviousSuggestion
 Set-PSReadLineKeyHandler -Key "Ctrl+r" -Function SwitchPredictionView
-# Set-PSReadLineKeyHandler -Key "Tab" -Function MenuComplete
-
 
 ### Alias
+$profiledir = $(Get-Item $PROFILE.CurrentUserAllHosts).DirectoryName
+$scriptsdir = $(Join-Path $profiledir 'Scripts')
 Set-Alias unzip Expand-Archive
 Set-Alias touch New-Item
 Set-Alias vi  'C:\Program Files\Vim\vim90\vim.exe'
 Set-Alias vim 'C:\Program Files\Vim\vim90\vim.exe'
+Set-Alias Edit-Profile             $(Join-Path $scriptsdir 'Edit-Profile.ps1')
+Set-Alias Get-Timestamp            $(Join-Path $scriptsdir 'Get-Timestamp.ps1')
+Set-Alias Install-Fonts            $(Join-Path $scriptsdir 'Install-Fonts.ps1')
+Set-Alias Install-PSModule         $(Join-Path $scriptsdir 'Install-PSModule.ps1')
+Set-Alias Install-VSCodeExtensions $(Join-Path $scriptsdir 'Install-VSCodeExtensions.ps1')
+Set-Alias Install-WingetPackages   $(Join-Path $scriptsdir 'Install-WingetPackages.ps1')
+Set-Alias Install-WSL              $(Join-Path $scriptsdir 'Install-WSL.ps1')
+Set-Alias Invoke-AsAdmin           $(Join-Path $scriptsdir 'Invoke-AsAdmin.ps1')
+Set-Alias Publish-SymbolicLink     $(Join-Path $scriptsdir 'Publish-SymbolicLink.ps1')
+Set-Alias Test-Admin               $(Join-Path $scriptsdir 'Test-Admin.ps1')
+Set-Alias Test-ExistCommand        $(Join-Path $scriptsdir 'Test-ExistCommand.ps1')
+Set-Alias Test-ExistPSModule       $(Join-Path $scriptsdir 'Test-ExistPSModule.ps1')
+Set-Alias Test-ReparsePoint        $(Join-Path $scriptsdir 'Test-ReparsePoint.ps1')
+Set-Alias which                    $(Join-Path $scriptsdir 'which.ps1')
+
 
 ### Oh-My-Posh
-if (IsExistCommand -cmdname 'oh-my-posh') {
+if (Test-ExistCommand 'oh-my-posh') {
     oh-my-posh init pwsh --config $env:POSH_THEMES_PATH/spaceship.omp.json | Invoke-Expression
 }
 
-### PowerShell Module
-# URL: https://www.powershellgallery.com/
-### PowerShell Modules
+# ### PowerShell Module
+# # URL: https://www.powershellgallery.com/
+# ### PowerShell Modules
 $psmodules = @(
     'posh-git'
     'Terminal-Icons'
@@ -123,7 +69,7 @@ $psmodules = @(
     'CompletionPredictor'
 )
 foreach ($psmodule in $psmodules) {
-    if (IsExistModule -modulename $psmodule) {
+    if (Test-ExistPSModule $psmodule) {
         Import-Module $psmodule
     }
 }

@@ -1,13 +1,5 @@
 
-function RunAsAdmin {
-    param (
-        [Parameter(Mandatory = $true)][string]$script,
-        [Parameter()][string]$scriptArgs
-    )
-    Start-Process pwsh -ArgumentList '-NoExit', $script, $scriptArgs -Verb 'RunAs' -Wait
-}
-
-function IsAdmin {
+function Test-Admin {
     param ()
     $wid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
     $prp = new-object System.Security.Principal.WindowsPrincipal($wid)
@@ -19,11 +11,7 @@ function IsAdmin {
 $starterScript = $(Join-Path "$env:TEMP" 'starter.ps1')
 $reposDir = $(Join-Path "$env:USERPROFILE" 'repos')
 $workDir = $(Join-Path "$reposDir" 'dotfiles-win')
-$isAdmin = $(IsAdmin)
-
-if (-not (Test-Path "$reposDir")) {
-    New-Item "$reposDir" -ItemType Directory
-}
+$isAdmin = $(Test-Admin)
 
 if (-not $isAdmin) {
 
@@ -63,11 +51,9 @@ else {
     $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path', 'User')
 
     ### Download dotfiles
-    Write-Host "$workdir"
-    # if (Test-Path "$workdir") {
-    #     Remove-Item -Path "$workdir" -Recurse -Force
-    # }
-
+    if (-not (Test-Path "$reposDir")) {
+        New-Item "$reposDir" -ItemType Directory
+    }
     if (-not (Test-Path "$workdir")) {
         git clone --verbose 'https://github.com/k5-mot/dotfiles-win.git' "$workdir"
     }
@@ -75,8 +61,8 @@ else {
 
     ### Run Installer
     if (Get-Command -Name 'pwsh' -ErrorAction SilentlyContinue) {
-        pwsh.exe $(Join-Path "$workdir" 'setup.ps1')
         pwsh.exe $(Join-Path "$workdir" 'install.ps1')
+        pwsh.exe $(Join-Path "$workdir" 'setup.ps1')
     }
 }
 
